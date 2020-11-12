@@ -2,13 +2,6 @@
 let menuToggle = document.querySelector('#menu-toggle');
 // Создаем переменную, в которую положим меню
 let menu = document.querySelector('.sidebar');
-// отслеживаем клик по кнопке меню и запускаем функцию 
-menuToggle.addEventListener('click', function (event) {
-  // отменяем стандартное поведение ссылки
-  event.preventDefault();
-  // вешаем класс на меню, когда кликнули по кнопке меню 
-  menu.classList.toggle('visible');
-})
 
 const regExpValidEmail = /^\w+@\w+\.\w{2,}$/;
 
@@ -112,7 +105,13 @@ const toggleAuthDom = () => {
     userElem.style.display = 'none'; 
   }
 };
-loginForm.addEventListener('submit', event => {
+
+const showAllPosts = () => {
+  postsWrapper.innerHTML = 'ЗДЕСЬ БЫЛ ВАСЯ'
+};
+
+const init = () => {
+  loginForm.addEventListener('submit', event => {
   event.preventDefault();
 
   const emailValue = emailInput.value;
@@ -146,10 +145,20 @@ editContainer.addEventListener('submit', event => {
   editContainer.classList.remove('visible');
 })
 
-const showAllPosts = () => {
-  postsWrapper.innerHTML = 'ЗДЕСЬ БЫЛ ВАСЯ'
-}
-showAllPosts();
+// отслеживаем клик по кнопке меню и запускаем функцию 
+menuToggle.addEventListener('click', function (event) {
+  // отменяем стандартное поведение ссылки
+  event.preventDefault();
+  // вешаем класс на меню, когда кликнули по кнопке меню 
+  menu.classList.toggle('visible');
+})
 
-toggleAuthDom();
+  showAllPosts();
+  toggleAuthDom();
+}
+document.addEventListener('DOMContentLoaded', () => {
+  init();
+})
+
+
 
