@@ -216,17 +216,46 @@
       </div>
 
       <div class="user">
-        <a href="#" class="user-info">
-          <img width="40" height="40" src="img/avatar.jpeg" alt="photo: user" class="user-avatar">
-          <span class="user-name">islamovartem</span>
-        </a>
-        <!-- /.user-info -->
-        <a href="#" class="exit">
-          <svg class="icon icon-exit">
-            <use xlink:href="img/icons.svg#exit"></use>
-          </svg>
-        </a>
-        <!-- /.exit -->
+        <div class="user-container">
+          <a href="#" class="user-info">
+            <img width="40" height="40" src="img/avatar.jpeg" alt="photo: user" class="user-avatar">
+            <span class="user-name">islamovartem</span>
+          </a>
+          <!-- /.user-info -->
+          <a href="#" class="edit">
+            <img src="img/edit-button.svg" alt="edit-button" class="icon icon-edit">
+          </a>
+          <a href="#" class="exit">
+            <svg class="icon icon-exit">
+              <use xlink:href="img/icons.svg#exit"></use>
+            </svg>
+          </a>
+          <!-- /.exit -->
+        </div>
+        <!-- /.user-container -->
+        <form class="edit-container">
+          <h2 class="edit-title">Редактировать</h2>
+
+          <label class="edit-label">Ваш логин
+            <input type="text" 
+            class="edit-input edit-username"
+            name="username"
+            minlength="3"
+            placeholder="логин"
+            required>
+          </label>
+
+          <label class="edit-label">Ваше фото
+            <input type="text" 
+            class="edit-input edit-photo"
+            name="photo"
+            placeholder="URL-photo">
+          </label>
+
+          <button class="edit-button">Сохранить</button>
+
+        </form>
+        <!--.edit-container  -->
       </div>
       <!-- /.user -->
       <nav class="sidebar-nav">
