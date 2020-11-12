@@ -28,8 +28,7 @@ const editUsername = document.querySelector('.edit-username');
 const editPhotoURL = document.querySelector('.edit-photo');
 const userAvatarElem = document.querySelector('.user-avatar');
 
-
-
+const postsWrapper = document.querySelector('.posts');
 
 const listUsers = [
   {
@@ -74,7 +73,7 @@ const setUsers = {
     }
 
     if(!this.getUser(email))  {
-      const user = {email, password, displayName: email};
+      const user = {email, password, displayName: email.substring(0, email.indexOf('@'))};
       listUsers.push(user)
       this.authorizedUser(user)
       handler();
@@ -129,23 +128,28 @@ loginSignup.addEventListener('click', event => {
 
   setUsers.signUp(emailValue, passwordValue, toggleAuthDom);
   loginForm.reset();
-
+});
   exitElem.addEventListener('click', event => {
     event.preventDefault();
     setUsers.logOut(toggleAuthDom);
-  })
-
 });
 
 editElem.addEventListener('click', event => {
   event.preventDefault();
   editContainer.classList.toggle('visible');
+  editUsername.value = setUser.user.displayName;
 });
-editContainer.addEventListener('click', event => {
-  event.preventDefault();
 
+editContainer.addEventListener('submit', event => {
+  event.preventDefault();
   setUsers.editUser(editUsername.value, editPhotoURL.value, toggleAuthDom)
+  editContainer.classList.remove('visible');
 })
+
+const showAllPosts = () => {
+  postsWrapper.innerHTML = 'ЗДЕСЬ БЫЛ ВАСЯ'
+}
+showAllPosts();
 
 toggleAuthDom();
 
