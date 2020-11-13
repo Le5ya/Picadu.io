@@ -20,8 +20,9 @@ const editContainer = document.querySelector('.edit-container');
 const editUsername = document.querySelector('.edit-username');
 const editPhotoURL = document.querySelector('.edit-photo');
 const userAvatarElem = document.querySelector('.user-avatar');
-
 const postsWrapper = document.querySelector('.posts');
+const buttonNewPost = document.querySelector('.button-new-post');
+const addPostElem = document.querySelector('.add-post');
 
 const listUsers = [
   {
@@ -97,7 +98,7 @@ const setPosts = {
       title: 'Заголовок поста',
       text: 'Далеко-далеко за словесными горами в стране гласных и согласных живут рыбные тексты. Языком что рмаленький реторический вершину текстов обеспечивает гор свой назад решила сбить маленькая дорогу жизни рукопись ебукв деревни предложения, ручеек залетают продолжил парадигматическая? Но языком сих пустился, запятой своего снова решила меня вопроса моей своих пояс коварный, власти диких правилами напоивший они текстов ipsum первуподпоясал? Лучше, щеке подпоясал приставка большого курсивных на берегу своего? Злых, составитель агентство чтовопроса ведущими о решила одна алфавит!',
       tags: ['свежее', 'новое','горячее','мое','случайность'],
-      author: 'maks@mail.com',
+      author: {displayName: 'maks', photo:'https://i.pinimg.com/originals/50/8f/24/508f24061a790115cbf26b9624771e20.jpg'},
       date: '11.11.20, 20:54:00',
       like: 15,
       comments: 20,
@@ -106,7 +107,7 @@ const setPosts = {
       title: 'Заголовок поста2',
       text: 'Далеко-далеко за словесными горами в стране гласных и согласных живут рыбные тексты. Языком что рмаленький реторический вершину текстов обеспечивает гор свой назад решила сбить маленькая дорогу жизни рукопись ебукв деревни предложения, ручеек залетают продолжил парадигматическая? Но языком сих пустился, запятой своего снова решила меня вопроса моей своих пояс коварный, власти диких правилами напоивший они текстов ipsum первуподпоясал? Лучше, щеке подпоясал приставка большого курсивных на берегу своего? Злых, составитель агентство чтовопроса ведущими о решила одна алфавит!',
       tags: ['свежее', 'новое','мое','случайность'],
-      author: 'kate@mail.com',
+      author: {displayName: 'kate', photo: 'https://it-doc.info/wp-content/uploads/2019/06/avatarka_dlya_devushki_.jpg'},
       date: '11.11.20, 20:54:00',
       like: 45,
       comments: 12,
@@ -115,36 +116,63 @@ const setPosts = {
       title: 'Заголовок поста3',
       text: 'Далеко-далеко за словесными горами в стране гласных и согласных живут рыбные тексты. Языком что рмаленький реторический вершину текстов обеспечивает гор свой назад решила сбить маленькая дорогу жизни рукопись ебукв деревни предложения, ручеек залетают продолжил парадигматическая? Но языком сих пустился, запятой своего снова решила меня вопроса моей своих пояс коварный, власти диких правилами напоивший они текстов ipsum первуподпоясал? Лучше, щеке подпоясал приставка большого курсивных на берегу своего? Злых, составитель агентство чтовопроса ведущими о решила одна алфавит!',
       tags: ['свежее', 'новое','горячее','мое','случайность'],
-      author: 'maks@mail.com',
+      author: {displayName: 'nik', photo: 'https://images.plurk.com/ykb0-2RnfLnD6za03elgSx8APVc.jpg'},
       date: '11.11.20, 20:54:00',
       like: 15,
       comments: 20,
     },
-  ]
+  ],
+  addPost(title, text, tags, handler) {
+
+    this.allPosts.unshift ({
+      title,
+      text,
+      tags: tags.split(',').map(item => item.trim()),
+      author: {
+        displayName: setUsers.user.displayName,
+        photo: setUsers.user.photo, 
+      },
+      date: new Date().toLocaleString(), 
+      like: 0,
+      comments: 0,
+    })
+
+    if (handler) {
+      handler();
+    }
+  }
 };
 
 
 const toggleAuthDom = () => {
   const user = setUsers.user;
-  console.log('user:', user);
+  // console.log('user:', user);
 
   if(user) {
     loginElem.style.display = 'none';
     userElem.style.display = '';
     userNameElem.textContent = user.displayName;
     userAvatarElem.src = user.photo ? user.photo : userAvatarElem.src;
+    buttonNewPost.classList.add('visible');
   } else {
     loginElem.style.display = '';
-    userElem.style.display = 'none'; 
+    userElem.style.display = 'none';
+    buttonNewPost.classList.remove('visible');
+    addPostElem.classList.remove('visible'); 
+    postsWrapper.classList.add('visible');
   }
 };
+const showAddPost =() =>{
+  addPostElem.classList.add('visible');
+  postsWrapper.classList.remove('visible');
+}
 
 const showAllPosts = () => {
 
   let postsHTML = '';
 
   setPosts.allPosts.forEach(post => {
-    const { title, text, date, tags, counter, username } = post;
+    const { title, text, date, tags, like, comments, author } = post;
 
     postsHTML += `
           <section class="post">
@@ -152,8 +180,7 @@ const showAllPosts = () => {
           <h2 class="post-title">${title}</h2>
           <p class="post-text">${text} </p>
           <div class="tags">
-            ${tags}
-            <a href="# class="tag">#свежее</a>
+            ${tags.map(tag =>`<a href="#" class="tag">#${tag}</a>`)}
           </div>
           <!-- /.tags -->
         </div>
@@ -164,13 +191,13 @@ const showAllPosts = () => {
               <svg width="19" height="20" class="icon icon-like">
                 <use xlink:href="img/icons.svg#like"></use>
               </svg>
-              <span class="likes-counter">${counter}</span>
+              <span class="likes-counter">${like}</span>
             </button>
             <button class="post-button comments">
               <svg width="21" height="21" class="icon icon-comment">
                 <use xlink:href="img/icons.svg#comment"></use>
               </svg>
-              <span class="comments-counter">${counter}</span>
+              <span class="comments-counter">${comments}</span>
             </button>
             <button class="post-button save">
               <svg width="19" height="19" class="icon icon-save">
@@ -186,10 +213,10 @@ const showAllPosts = () => {
           <!-- /.post-buttons -->
           <div class="post-author">
             <div class="author-about">
-              <a href="#" class="author-username">${username}</a>
+              <a href="#" class="author-username">${author.displayName}</a>
               <span class="post-time">${date}</span>
             </div>
-            <a href="#" class="author-link"><img src="img/avatar.jpeg" alt="avatar" class="author-avatar"></a>
+            <a href="#" class="author-link"><img src=${author.photo ||"img/avatar.jpeg"} alt="avatar" class="author-avatar"></a>
           </div>
           <!-- /.post-author -->
         </div>
@@ -198,13 +225,16 @@ const showAllPosts = () => {
     `;
 
   })
+
+  addPostElem.classList.remove('visible');
+  postsWrapper.classList.add('visible');
+
   postsWrapper.innerHTML = postsHTML;
 };
 
 const init = () => {
   loginForm.addEventListener('submit', event => {
   event.preventDefault();
-
   const emailValue = emailInput.value;
   const passwordValue = passwordInput.value;
 
@@ -243,6 +273,29 @@ menuToggle.addEventListener('click', function (event) {
   // вешаем класс на меню, когда кликнули по кнопке меню 
   menu.classList.toggle('visible');
 })
+buttonNewPost.addEventListener('click', event => {
+  event.preventDefault();
+  showAddPost();
+});
+
+addPostElem.addEventListener('submit', event => {
+  event.preventDefault();
+  const { title, text, tags } = addPostElem.elements;
+  console.log(title, text. tags);
+
+  if(title.value.lenght < 6) {
+    alert('Слишком короткий заголовок');
+    return;
+  }
+  if(text.value.lenght < 50) {
+    alert('Слишком короткий пост');
+    return;
+  }
+  setPosts.addPost(title.value, text.value, tags.value, showAllPosts);
+
+  addPostElem.classList.remove('visibe');
+  addPostElem.reset();  
+});
 
   showAllPosts();
   toggleAuthDom();
