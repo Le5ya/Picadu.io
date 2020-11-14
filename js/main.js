@@ -1,3 +1,16 @@
+    // Your web app's Firebase configuration
+     firebaseConfig = {
+      apiKey: "AIzaSyBjQp0SUifpeTvX4PwTvlVDf_L4sBHudY8",
+      authDomain: "pikadu-b3036.firebaseapp.com",
+      databaseURL: "https://pikadu-b3036.firebaseio.com",
+      projectId: "pikadu-b3036",
+      storageBucket: "pikadu-b3036.appspot.com",
+      messagingSenderId: "1091617022783",
+      appId: "1:1091617022783:web:3ad1eefc7eb299b288698a"
+    };
+    // Initialize Firebase
+    firebase.initializeApp(firebaseConfig);
+    console.log(firebase);
 // Создаем переменную, в которую положим кнопку меню
 let menuToggle = document.querySelector('#menu-toggle');
 // Создаем переменную, в которую положим меню
@@ -39,22 +52,55 @@ const listUsers = [
 
 const setUsers = {
   user: null,
+  initUser(handler) {
+    firebase.auth().onAuthStateChanged(user => {
+      if(user) {
+        this.user = user;
+      } else {
+       this.user = null; 
+    }
+    if(handler) handler();
+    })
+
+  },
   logIn(email, password, handler) {
     if(!regExpValidEmail.test(email)) {
        alert ('email is invalid');
        return;
   }
-    const user = this.getUser(email);
-    if(user && user.password === password) {
-      this.authorizedUser(user)
-      handler();
-    } else {
-      alert ('Почта или пароль указаны неверно')
-    }
+  firebase.auth().signInWithEmailAndPassword(email, password)
+  .catch(err => {
+        const errCode = err.code;
+        const errMessage = err.message;
+          if (errCode ==='auth/wrong-password') {
+            console.log(errMessage);
+            alert('Неверный пароль')
+
+          } else if (errCode = 'auth/user-not-found') {
+            console.log(errMessage);
+            alert('Пользователь не найден')
+          } else {
+            alert(errMessage)
+          }
+          console.log(err);
+  })
+
+  
+    // const user = this.getUser(email);
+    // if(user && user.password === password) {
+    //   this.authorizedUser(user)
+    //   handler();
+    // } else {
+    //   alert ('Почта или пароль указаны неверно')
+    // }
   },
   logOut(handler) {
-    this.user = null;
-    handler();
+    rirebase.auth().signOut()
+
+    // if (handler) {
+    //   handler(); 
+    // }
+   
   },
   signUp(email, password, handler) {
       if(!regExpValidEmail.test(email)) {
@@ -66,80 +112,124 @@ const setUsers = {
       return;
     }
 
-    if(!this.getUser(email))  {
-      const user = {email, password, displayName: email.substring(0, email.indexOf('@'))};
-      listUsers.push(user)
-      this.authorizedUser(user)
-      handler();
-    } else {
-      alert('Пользователь с таким email уже зарегистрирован')
-    }
+    firebase.auth()
+      .createUserWithEmailAndPassword(email, password)
+      .then(data => {
+        this.editUser(email.substring(0, email.index0f('@')), nul, handler)
+      })
+      .catch(err => {
+        const errCode = err.code;
+        const errMessage = err.message;
+          if (errCode ==='auth/weak-password') {
+            console.log(errMessage);
+            alert('Слабый пароль')
+
+          } else if (errCode = 'auth/email-already-in-use') {
+            console.log(errMessage);
+            alert('Этот парольуже используется')
+          } else {
+            alert(errMessage)
+          }
+          console.log(err);
+
+      });
+      
+      
+
+    // if(!this.getUser(email))  {
+    //   const user = {email, password, displayName: email.substring(0, email.indexOf('@'))};
+    //   listUsers.push(user)
+    //   this.authorizedUser(user)
+    //   handler();
+    // } else {
+    //   alert('Пользователь с таким email уже зарегистрирован')
+    // }
   },
-  editUser(userName, userPhoto, handler ) {
+  editUser(userName, photoURL, handler ) {
+      const user = firebase.auth().currentUser;
       if (userName) {
-        this.user.displayName = userName;
-      }
+        // this.user.displayName = userName;
       if (userPhoto) {
-        this.user.photo = userPhoto;
+        user.updateProfile({
+          displayName,
+          photoURL
+        })
+        // this.user.photo = userPhoto;
+      } else {
+          user.updateProfile({
+            displayName
+        }).then(handler)
       }
-      handler();
+    }
+      // handler();
   },
-  getUser(email) {
-    return listUsers.find(item => item.email === email)
-  },
-  authorizedUser(user) {
-    this.user = user;
-  }
+  // getUser(email) {
+  //   return listUsers.find(item => item.email === email)
+  // },
+  // authorizedUser(user) {
+  //   this.user = user;
+  // }
 };
 
 const setPosts = {
   allPosts: [
-    {
-      title: 'Заголовок поста',
-      text: 'Далеко-далеко за словесными горами в стране гласных и согласных живут рыбные тексты. Языком что рмаленький реторический вершину текстов обеспечивает гор свой назад решила сбить маленькая дорогу жизни рукопись ебукв деревни предложения, ручеек залетают продолжил парадигматическая? Но языком сих пустился, запятой своего снова решила меня вопроса моей своих пояс коварный, власти диких правилами напоивший они текстов ipsum первуподпоясал? Лучше, щеке подпоясал приставка большого курсивных на берегу своего? Злых, составитель агентство чтовопроса ведущими о решила одна алфавит!',
-      tags: ['свежее', 'новое','горячее','мое','случайность'],
-      author: {displayName: 'maks', photo:'https://i.pinimg.com/originals/50/8f/24/508f24061a790115cbf26b9624771e20.jpg'},
-      date: '11.11.20, 20:54:00',
-      like: 15,
-      comments: 20,
-    },
-    {
-      title: 'Заголовок поста2',
-      text: 'Далеко-далеко за словесными горами в стране гласных и согласных живут рыбные тексты. Языком что рмаленький реторический вершину текстов обеспечивает гор свой назад решила сбить маленькая дорогу жизни рукопись ебукв деревни предложения, ручеек залетают продолжил парадигматическая? Но языком сих пустился, запятой своего снова решила меня вопроса моей своих пояс коварный, власти диких правилами напоивший они текстов ipsum первуподпоясал? Лучше, щеке подпоясал приставка большого курсивных на берегу своего? Злых, составитель агентство чтовопроса ведущими о решила одна алфавит!',
-      tags: ['свежее', 'новое','мое','случайность'],
-      author: {displayName: 'kate', photo: 'https://it-doc.info/wp-content/uploads/2019/06/avatarka_dlya_devushki_.jpg'},
-      date: '11.11.20, 20:54:00',
-      like: 45,
-      comments: 12,
-    },
-    {
-      title: 'Заголовок поста3',
-      text: 'Далеко-далеко за словесными горами в стране гласных и согласных живут рыбные тексты. Языком что рмаленький реторический вершину текстов обеспечивает гор свой назад решила сбить маленькая дорогу жизни рукопись ебукв деревни предложения, ручеек залетают продолжил парадигматическая? Но языком сих пустился, запятой своего снова решила меня вопроса моей своих пояс коварный, власти диких правилами напоивший они текстов ipsum первуподпоясал? Лучше, щеке подпоясал приставка большого курсивных на берегу своего? Злых, составитель агентство чтовопроса ведущими о решила одна алфавит!',
-      tags: ['свежее', 'новое','горячее','мое','случайность'],
-      author: {displayName: 'nik', photo: 'https://images.plurk.com/ykb0-2RnfLnD6za03elgSx8APVc.jpg'},
-      date: '11.11.20, 20:54:00',
-      like: 15,
-      comments: 20,
-    },
+    // {
+    //   title: 'Заголовок поста',
+    //   text: 'Далеко-далеко за словесными горами в стране гласных и согласных живут рыбные тексты. Языком что рмаленький реторический вершину текстов обеспечивает гор свой назад решила сбить маленькая дорогу жизни рукопись ебукв деревни предложения, ручеек залетают продолжил парадигматическая? Но языком сих пустился, запятой своего снова решила меня вопроса моей своих пояс коварный, власти диких правилами напоивший они текстов ipsum первуподпоясал? Лучше, щеке подпоясал приставка большого курсивных на берегу своего? Злых, составитель агентство чтовопроса ведущими о решила одна алфавит!',
+    //   tags: ['свежее', 'новое','горячее','мое','случайность'],
+    //   author: {displayName: 'maks', photo:'https://i.pinimg.com/originals/50/8f/24/508f24061a790115cbf26b9624771e20.jpg'},
+    //   date: '11.11.20, 20:54:00',
+    //   like: 15,
+    //   comments: 20,
+    // },
+    // {
+    //   title: 'Заголовок поста2',
+    //   text: 'Далеко-далеко за словесными горами в стране гласных и согласных живут рыбные тексты. Языком что рмаленький реторический вершину текстов обеспечивает гор свой назад решила сбить маленькая дорогу жизни рукопись ебукв деревни предложения, ручеек залетают продолжил парадигматическая? Но языком сих пустился, запятой своего снова решила меня вопроса моей своих пояс коварный, власти диких правилами напоивший они текстов ipsum первуподпоясал? Лучше, щеке подпоясал приставка большого курсивных на берегу своего? Злых, составитель агентство чтовопроса ведущими о решила одна алфавит!',
+    //   tags: ['свежее', 'новое','мое','случайность'],
+    //   author: {displayName: 'kate', photo: 'https://it-doc.info/wp-content/uploads/2019/06/avatarka_dlya_devushki_.jpg'},
+    //   date: '11.11.20, 20:54:00',
+    //   like: 45,
+    //   comments: 12,
+    // },
+    // {
+    //   title: 'Заголовок поста3',
+    //   text: 'Далеко-далеко за словесными горами в стране гласных и согласных живут рыбные тексты. Языком что рмаленький реторический вершину текстов обеспечивает гор свой назад решила сбить маленькая дорогу жизни рукопись ебукв деревни предложения, ручеек залетают продолжил парадигматическая? Но языком сих пустился, запятой своего снова решила меня вопроса моей своих пояс коварный, власти диких правилами напоивший они текстов ipsum первуподпоясал? Лучше, щеке подпоясал приставка большого курсивных на берегу своего? Злых, составитель агентство чтовопроса ведущими о решила одна алфавит!',
+    //   tags: ['свежее', 'новое','горячее','мое','случайность'],
+    //   author: {displayName: 'nik', photo: 'https://images.plurk.com/ykb0-2RnfLnD6za03elgSx8APVc.jpg'},
+    //   date: '11.11.20, 20:54:00',
+    //   like: 15,
+    //   comments: 20,
+    // },
   ],
   addPost(title, text, tags, handler) {
 
+    const user =firebase.auth().currentUser;
+
     this.allPosts.unshift ({
+      id: `postID${(+new Date().toString(16))}-${user.uid}`,
       title,
       text,
       tags: tags.split(',').map(item => item.trim()),
       author: {
         displayName: setUsers.user.displayName,
-        photo: setUsers.user.photo, 
+        photoURL: setUsers.user.photoURL, 
       },
       date: new Date().toLocaleString(), 
       like: 0,
       comments: 0,
     })
+    firebase.database().ref('post').set(this.allPosts)
+      .then(() => this.getPosts(handler))
 
-    if (handler) {
+    // if (handler) {
+    //   handler();
+    // }
+  },
+  getPosts(handler) {
+    firebase.database().ref('post').on('value', snapshot => {
+      this.allPosts = snapshot.val() || [];
       handler();
-    }
+    })
   }
 };
 
@@ -152,7 +242,7 @@ const toggleAuthDom = () => {
     loginElem.style.display = 'none';
     userElem.style.display = '';
     userNameElem.textContent = user.displayName;
-    userAvatarElem.src = user.photo ? user.photo : userAvatarElem.src;
+    userAvatarElem.src = user.photoURL ? user.photoURL : userAvatarElem.src;
     buttonNewPost.classList.add('visible');
   } else {
     loginElem.style.display = '';
@@ -297,12 +387,11 @@ addPostElem.addEventListener('submit', event => {
   addPostElem.reset();  
 });
 
-  showAllPosts();
-  toggleAuthDom();
+  setUsers.initUser(toggleAuthDom);
+  setPosts.getPosts(showAllPosts);
+  // toggleAuthDom();
 }
-document.addEventListener('DOMContentLoaded', () => {
-  init();
-})
+document.addEventListener('DOMContentLoaded', init)
 
 
 
